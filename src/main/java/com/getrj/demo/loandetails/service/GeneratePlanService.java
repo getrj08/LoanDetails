@@ -83,7 +83,7 @@ public class GeneratePlanService implements IGeneratePlanService {
 		createResponse.setInterest(interestForMonth);
 		createResponse.setPrincipal(principal);
 		createResponse.setRemainingOutstandingPrincipal(roundValues(remainingOutstandingAmount));
-		createResponse.setDate(LocalDateTime.of(year,currentMonth,startDate.getDayOfMonth(),0,0));
+		createResponse.setDate(LocalDateTime.of(year,currentMonth,startDate.getDayOfMonth(),startDate.getHour(),startDate.getMinute()));
 	}
 	
 	
