@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.getrj.demo.loandetails.model.PlanRequest;
 import com.getrj.demo.loandetails.model.PlanResponse;
+import com.getrj.demo.loandetails.utility.GeneratorUtility;
 
 @Service
 public class GeneratePlanService implements IGeneratePlanService {
@@ -22,7 +23,7 @@ public class GeneratePlanService implements IGeneratePlanService {
 		int i = 1;
 		int month = startDate.getMonthValue();
 		int year = startDate.getYear();
-		List<PlanResponse> response1 = new ArrayList<>();
+		List<PlanResponse> planResponse = new ArrayList<>();
 		
 		double initialOutstandingPrincipal = 0;
 		double remainingOutstandingAmount = 0;
@@ -39,7 +40,6 @@ public class GeneratePlanService implements IGeneratePlanService {
 			
 			PlanResponse createResponse = new PlanResponse();
 			
-			
 			if(initialOutstandingPrincipal == 0) {
 				initialOutstandingPrincipal = planRequest.getLoanAmount();
 			} else {
@@ -47,14 +47,14 @@ public class GeneratePlanService implements IGeneratePlanService {
 			}
 			
 			double interestForMonth = calculateInterestForMonth(planRequest, daysInMonth, initialOutstandingPrincipal, daysInYear);
-			double annuity = getAnnuity(planRequest, daysInMonth, daysInYear);
-			double principal = calculatePrincipalAmount(annuity, interestForMonth);
+			double annuity = GeneratorUtility.getAnnuity(planRequest.getNominalRate(),planRequest.getLoanAmount(),planRequest.getDuration(), daysInMonth, daysInYear);
+			double principal = GeneratorUtility.calculatePrincipalAmount(annuity, interestForMonth);
 			remainingOutstandingAmount = initialOutstandingPrincipal - principal;
 
 			if(annuity > initialOutstandingPrincipal) {
-				annuity = roundValues(initialOutstandingPrincipal);
+				annuity = GeneratorUtility.roundValues(initialOutstandingPrincipal);
 				remainingOutstandingAmount = 0;
-				principal = calculatePrincipalAmount(annuity, interestForMonth);
+				principal = GeneratorUtility.calculatePrincipalAmount(annuity, interestForMonth);
 			}
 			
 			getPlanResponse(startDate, year, initialOutstandingPrincipal, remainingOutstandingAmount, currentMonth,
@@ -62,12 +62,13 @@ public class GeneratePlanService implements IGeneratePlanService {
 			i++;
 			currentMonth++;
 			
-			response1.add(createResponse);
+			planResponse.add(createResponse);
 		}
 		
-		return response1;
+		return planResponse;
 	}
 	
+	@Override
 	public double calculateInterestForMonth(PlanRequest planRequest,int days, double initialOutstandingPrincipal, int daysInYear) {
 		double interestValue = (initialOutstandingPrincipal 
 				* (planRequest.getNominalRate()/100 * days)) / daysInYear;
@@ -79,32 +80,11 @@ public class GeneratePlanService implements IGeneratePlanService {
 			double remainingOutstandingAmount, int currentMonth, PlanResponse createResponse, double interestForMonth,
 			double annuity, double principal) {
 		createResponse.setBorrowerPaymentAmount(annuity);
-		createResponse.setInitialOutstandingPrincipal(roundValues(initialOutstandingPrincipal));
+		createResponse.setInitialOutstandingPrincipal(GeneratorUtility.roundValues(initialOutstandingPrincipal));
 		createResponse.setInterest(interestForMonth);
 		createResponse.setPrincipal(principal);
-		createResponse.setRemainingOutstandingPrincipal(roundValues(remainingOutstandingAmount));
+		createResponse.setRemainingOutstandingPrincipal(GeneratorUtility.roundValues(remainingOutstandingAmount));
 		createResponse.setDate(LocalDateTime.of(year,currentMonth,startDate.getDayOfMonth(),startDate.getHour(),startDate.getMinute()));
 	}
 	
-	
-	private double calculatePrincipalAmount(double annuity, double interest) {
-		double principal = annuity-interest;
-		return Math.round(principal * 100.0) / 100.0;
-	}
-	
-	private double getAnnuity(PlanRequest planRequest, int daysInMonth, int daysInYear) {
-		double rate = planRequest.getNominalRate() / 100;
-        double perPeriodRate = (rate * daysInMonth) / daysInYear;
-        double presentValue = planRequest.getLoanAmount() * perPeriodRate;
-        double annuity = presentValue /
-            (1 - Math.pow(1 + perPeriodRate, -planRequest.getDuration()));
-        annuity = Math.round(annuity * 100.0) / 100.0;
-		return annuity;
-	}
-	
-	private double roundValues(double value) {
-		value = Math.round(value * 100.0) / 100.0;
-		return value;
-	}
-
 }
