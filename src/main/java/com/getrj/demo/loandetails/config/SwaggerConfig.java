@@ -17,12 +17,14 @@ public class SwaggerConfig {
 
 	@Bean
 	public Docket planApi() {
-		 return new Docket(DocumentationType.SWAGGER_2)
+		 Docket docket = new Docket(DocumentationType.SWAGGER_2)
 	                .select()
 	                .apis(RequestHandlerSelectors.basePackage("com.getrj.demo.loandetails.controller"))
 	                .paths(regex("/generate-plan.*"))
 	                .build()
 	                .apiInfo(metaData());
+		 docket.useDefaultResponseMessages(false);
+		 return docket;
 	    }
 	
 	private ApiInfo metaData() {

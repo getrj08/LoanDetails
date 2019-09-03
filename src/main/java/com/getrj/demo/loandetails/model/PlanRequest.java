@@ -19,7 +19,7 @@ public class PlanRequest {
 	@Positive (message = "Duration cannot be less or equal 0")
 	private int duration;
 	@DateTimeFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
-	@JsonFormat(pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
+	@JsonFormat(shape=JsonFormat.Shape.STRING,pattern = "yyyy-MM-dd'T'HH:mm:ss'Z'")
 	private LocalDateTime startDate;
 	public double getLoanAmount() {
 		return loanAmount;
