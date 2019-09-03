@@ -48,8 +48,6 @@ public class GeneratePlanService implements IGeneratePlanService {
 			
 			double interestForMonth = calculateInterestForMonth(planRequest, daysInMonth, initialOutstandingPrincipal, daysInYear);
 			double annuity = getAnnuity(planRequest, daysInMonth, daysInYear);
-			System.out.println(annuity);
-			//double annuity = calculateAnnuityForMonth(planRequest);
 			double principal = calculatePrincipalAmount(annuity, interestForMonth);
 			remainingOutstandingAmount = initialOutstandingPrincipal - principal;
 
@@ -59,67 +57,35 @@ public class GeneratePlanService implements IGeneratePlanService {
 				principal = calculatePrincipalAmount(annuity, interestForMonth);
 			}
 			
-			
-			
-			
-			
-			createResponse.setBorrowerPaymentAmount(annuity);
-			createResponse.setInitialOutstandingPrincipal(roundValues(initialOutstandingPrincipal));
-			createResponse.setInterest(interestForMonth);
-			createResponse.setPrincipal(principal);
-			createResponse.setRemainingOutstandingPrincipal(roundValues(remainingOutstandingAmount));
-			createResponse.setDate(LocalDateTime.of(year,currentMonth,startDate.getDayOfMonth(),0,0));
-			
-			
-			//System.out.println(daysInMonth);
+			getPlanResponse(startDate, year, initialOutstandingPrincipal, remainingOutstandingAmount, currentMonth,
+					createResponse, interestForMonth, annuity, principal);
 			i++;
 			currentMonth++;
 			
 			response1.add(createResponse);
 		}
 		
-		//int month = startDate.getMonthValue();
-		/*System.out.println(month);
-		int year = startDate.getYear();
-		YearMonth yearMonthObject = YearMonth.of(year, month);
-		int daysInMonth = yearMonthObject.lengthOfMonth();
-		
-		PlanResponse response = new PlanResponse();
-		double interestForMonth = calculateInterestForMonth(planRequest, daysInMonth, initialOutstandingPrincipal);
-		response.setInterest(interestForMonth);
-		double annuity = calculateAnnuityForMonth(planRequest);
-		response.setPrincipal(annuity);
-		response.setPrincipal(calculatePrincipalAmount(annuity, interestForMonth));
-		response.setBorrowerPaymentAmount(annuity);*/
-		
-		
-		
-		
-		
 		return response1;
 	}
 	
-	private double calculateInterestForMonth(PlanRequest planRequest,int days, double initialOutstandingPrincipal, int daysInYear) {
+	public double calculateInterestForMonth(PlanRequest planRequest,int days, double initialOutstandingPrincipal, int daysInYear) {
 		double interestValue = (initialOutstandingPrincipal 
 				* (planRequest.getNominalRate()/100 * days)) / daysInYear;
 		interestValue = Math.round(interestValue * 100.0) / 100.0;
 		return interestValue;
 	}
-	
-	private double calculateAnnuityForMonth(PlanRequest planRequest) {
-		double principal = planRequest.getLoanAmount();
-		double rate = getMonthlyRate((float) planRequest.getNominalRate());
-		int duration = planRequest.getDuration();
-		double annuity = (double) ((double) 
-				(principal*rate*Math.pow((1+rate), duration))/(Math.pow((1+rate),duration)-1));
-		annuity = Math.round(annuity * 100.0) / 100.0;
-		return annuity;
+
+	private void getPlanResponse(LocalDateTime startDate, int year, double initialOutstandingPrincipal,
+			double remainingOutstandingAmount, int currentMonth, PlanResponse createResponse, double interestForMonth,
+			double annuity, double principal) {
+		createResponse.setBorrowerPaymentAmount(annuity);
+		createResponse.setInitialOutstandingPrincipal(roundValues(initialOutstandingPrincipal));
+		createResponse.setInterest(interestForMonth);
+		createResponse.setPrincipal(principal);
+		createResponse.setRemainingOutstandingPrincipal(roundValues(remainingOutstandingAmount));
+		createResponse.setDate(LocalDateTime.of(year,currentMonth,startDate.getDayOfMonth(),0,0));
 	}
 	
-	private float getMonthlyRate(float rate) {
-		
-		return rate/12/100;
-	}
 	
 	private double calculatePrincipalAmount(double annuity, double interest) {
 		double principal = annuity-interest;

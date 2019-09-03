@@ -8,4 +8,6 @@ import com.getrj.demo.loandetails.model.PlanResponse;
 public interface IGeneratePlanService {
 
 	public List<PlanResponse> getPlanDetails(PlanRequest planRequest);
+	
+	public double calculateInterestForMonth(PlanRequest planRequest,int days, double initialOutstandingPrincipal, int daysInYear);
 }
