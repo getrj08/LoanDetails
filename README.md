@@ -20,14 +20,14 @@ Java(Required) along with Maven is needed to run the application
  
 	2- Once downloaded use the following commands to run the application
 
-                           mvn clean install
-						   mvn spring-boot:run
+                 mvn clean install
+                 mvn spring-boot:run
 
 	Additionally a Jar file is also provided in the project folder so that it can be directly added as an external library if required.
 
 	To Run the application using this jar file:
 
-						   java -jar loandetails.jar
+                 java -jar loandetails.jar
 
 To get the loan details the following service can be used
 
