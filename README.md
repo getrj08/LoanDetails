@@ -49,6 +49,7 @@ Since it is an rest API we can use postman or ARC to test and obtain the require
 
 # Postman/ARC
 POST - http://localhost:8080/generate-plan
+
 Headers:
 ```Content-Type : application/json``` 
 
