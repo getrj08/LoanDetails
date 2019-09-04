@@ -1,7 +1,6 @@
 package com.getrj.demo.loandetails.service;
 
 import java.time.LocalDateTime;
-import java.time.Month;
 import java.time.YearMonth;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,7 +16,6 @@ public class GeneratePlanService implements IGeneratePlanService {
 
 	@Override
 	public List<PlanResponse> getPlanDetails(PlanRequest planRequest) {
-		// TODO Auto-generated method stub
 		LocalDateTime startDate = planRequest.getStartDate();
 		int duration = planRequest.getDuration();
 		int i = 1;
